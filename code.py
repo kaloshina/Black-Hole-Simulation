@@ -1,4 +1,3 @@
-
 import pygame, sys
 import numpy as np
 
@@ -14,7 +13,6 @@ c = 3000.  # speed of light
 r_s = 80.  # Schwarzschild radius
 BHPos = np.array([960, 540])
 BHType = 1
-counter = 2
 
 
 class blackHole:
@@ -28,7 +26,8 @@ class blackHole:
 
 
 class lightRay:
-    def __init__(self, xpos, ypos, velAngle):
+    def __init__(self, xpos, ypos, velAngle, counter):
+        self.counter = counter
         # cartesian position and velocity
         pos = np.array([xpos, ypos])
         self.posRel = pos - BHPos
@@ -48,10 +47,9 @@ class lightRay:
 
     def update(self, dl):
         if self.alive:
-            global counter
 
             # conduct RK4 on r', phi', r and phi
-            if counter%2 == 1:
+            if self.counter%2 == 1:
                 k1 = self.d2r(self.dr)
                 k2 = self.d2r(self.dr+dl*k1/2)
                 k3 = self.d2r(self.dr+dl*k2/2)
@@ -63,7 +61,7 @@ class lightRay:
                 k4 = self.d2phi(self.dphi+dl*k3)
                 self.dphi += dl/6*(k1+2*k2+2*k3+k4)
                 #counter += 1
-            elif counter%2 == 0:
+            elif self.counter%2 == 0:
                 self.dr += self.d2r(self.dr)*dl
                 self.phi += self.d2phi(self.dphi)*dl
                 #counter += 1
@@ -119,10 +117,10 @@ class lightRay:
 BH1 = blackHole(BHPos[0], BHPos[1])
 
 # setting up the light rays
-n = 2
+n = 60
 LRList = [None]*n
 for i in range(n):
-    LRList[i] = lightRay(200,BHPos[1]-3*r_s,0)
+    LRList[i] = lightRay(0, BHPos[1]+1/2*r_s+i*15, 0, 1)
     
 
 
